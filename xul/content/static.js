@@ -274,8 +274,14 @@ function initStatic()
         }
         else
         {
-            client.dtFormatter = Services.intl.createDateTimeFormat(
-                undefined, { dateStyle: "full", timeStyle: "long" });
+            if (Services.vc.compare(Services.appinfo.platformVersion, "59.0") < 0) {
+                client.dtFormatter = Services.intl.createDateTimeFormat(
+                    undefined, { dateStyle: "full", timeStyle: "long" });
+            }
+            else {
+                client.dtFormatter = new Services.intl.DateTimeFormat(
+                    undefined, { dateStyle: "full", timeStyle: "long" });
+            }
 
             // Mmmm, fun. This ONLY affects the ChatZilla window, don't worry!
             Date.prototype.toStringInt = Date.prototype.toString;
