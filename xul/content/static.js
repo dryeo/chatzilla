@@ -296,15 +296,18 @@ function initStatic()
     updateSpellcheck(client.prefs["inputSpellcheck"]);
 
     // Initialize userlist stuff
-    // cache all the atoms to stop us crossing XPCOM boundaries *all the time*
-    client.atomCache = new Object();
-    var atomSvc = getService("@mozilla.org/atom-service;1", "nsIAtomService");
-    var atoms = ["founder-true", "founder-false", "admin-true", "admin-false",
-                 "op-true", "op-false", "halfop-true", "halfop-false",
-                 "voice-true", "voice-false", "away-true", "away-false",
-                 "unselected"];
-    for (var i = 0; i < atoms.length; i++)
-        client.atomCache[atoms[i]] = atomSvc.getAtom(atoms[i]);
+
+    if (Services.vc.compare(Services.appinfo.platformVersion, "22.0") < 0) {
+        // cache all the atoms to stop us crossing XPCOM boundaries *all the time*
+        client.atomCache = new Object();
+        var atomSvc = getService("@mozilla.org/atom-service;1", "nsIAtomService");
+        var atoms = ["founder-true", "founder-false", "admin-true", "admin-false",
+                     "op-true", "op-false", "halfop-true", "halfop-false",
+                     "voice-true", "voice-false", "away-true", "away-false",
+                     "unselected"];
+        for (var i = 0; i < atoms.length; i++)
+            client.atomCache[atoms[i]] = atomSvc.getAtom(atoms[i]);
+    }
 
     if (client.prefs["showModeSymbols"])
         setListMode("symbol");
