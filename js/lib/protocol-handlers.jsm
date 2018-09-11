@@ -73,13 +73,20 @@ IRCProtocolHandler.prototype =
 
     newURI(spec, charset, baseURI)
     {
-        const cls = Cc[STANDARDURL_CONTRACTID];
-        const url = cls.createInstance(Ci.nsIStandardURL);
         const port = this.isSecure ? 9999 : 6667;
 
-        url.init(Ci.nsIStandardURL.URLTYPE_STANDARD, port, spec, charset, baseURI);
+        if (!Cc.hasOwnProperty("@mozilla.org/network/standard-url-mutator;1")) {
+            const cls = Cc[STANDARDURL_CONTRACTID];
+            const url = cls.createInstance(Ci.nsIStandardURL);
 
-        return url.QueryInterface(Ci.nsIURI);
+            url.init(Ci.nsIStandardURL.URLTYPE_STANDARD, port, spec, charset, baseURI);
+
+            return url.QueryInterface(Ci.nsIURI);
+        }
+        return Cc["@mozilla.org/network/standard-url-mutator;1"]
+                 .createInstance(Ci.nsIStandardURLMutator)
+                 .init(Ci.nsIStandardURL.URLTYPE_STANDARD, port, spec, charset, baseURI)
+                 .finalize();
     },
 
     newChannel(URI)
